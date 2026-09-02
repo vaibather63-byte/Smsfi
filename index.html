@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>SMSIFY HUB - App Edition</title>
+<!-- Font Awesome 6 Pro / Free -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<!-- Google Fonts: Plus Jakarta Sans & Inter -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --bg-app: #f4f6fb;
+    --bg-surface: #ffffff;
+    --bg-surface-subtle: #f8fafc;
+    --bg-surface-active: #eef2ff;
+    
+    --primary: #4f46e5;
+    --primary-light: #6366f1;
+    --primary-subtle: #e0e7ff;
+    
+    --accent-cyan: #0284c7;
+    --accent-cyan-subtle: #e0f2fe;
+    --accent-emerald: #059669;
+    --accent-emerald-subtle: #d1fae5;
+    --accent-rose: #e11d48;
+    --accent-rose-subtle: #ffe4e6;
+    --accent-amber: #d97706;
+    --accent-amber-subtle: #fef3c7;
+    
+    --telegram: #0088cc;
+    --telegram-subtle: #e7f5fd;
+    
+    --text-title: #0f172a;
+    --text-body: #334155;
+    --text-muted: #64748b;
+    --text-light: #94a3b8;
+    
+    --border-light: #e2e8f0;
+    --border-card: #e5e7eb;
+    --border-focus: #818cf8;
+    
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+    --shadow-md: 0 4px 12px -2px rgba(15, 23, 42, 0.08), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
+    --shadow-lg: 0 10px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 18px;
+    --radius-xl: 24px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+input, textarea {
+    user-select: text;
+}
+
+body {
+    background-color: var(--bg-app);
+    color: var(--text-body);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    overflow-x: hidden;
+}
+
+/* ==================== NATIVE APP FRAME ==================== */
+.mobile-app-frame {
+    width: 100%;
+    max-width: 540px;
+    min-height: 100vh;
+    background: var(--bg-surface-subtle);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    box-shadow: 0 0 50px rgba(0,0,0,0.08);
+}
+
+@media (min-width: 768px) {
+    body {
+        padding: 20px 0;
+        background: #e9eef5;
+    }
+    .mobile-app-frame {
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.7);
+    }
+}
+
+/* ==================== SMOOTH PRELOADER ==================== */
+#appPreloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #ffffff;
+    z-index: 9999999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+#appPreloader.hide {
+    opacity: 0;
+    visibility: hidden;
+}
+.loader-app-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent-cyan) 100%);
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 26px;
+    box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+    animation: pulseApp 1.2s infinite ease-in-out;
+}
+@keyframes pulseApp {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+}
+.loader-spinner-bar {
+    width: 130px;
+    height: 4px;
+    background: #e2e8f0;
+    border-radius: 99px;
+    overflow: hidden;
+    position: relative;
+}
+.loader-spinner-bar::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -50%;
+    width: 50%; height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--accent-cyan));
+    border-radius: 99px;
+    animation: loaderSlide 1s infinite ease-in-out;
+}
+@keyframes loaderSlide {
+    0% { left: -50%; width: 30%; }
+    50% { width: 60%; }
+    100% { left: 100%; width: 30%; }
+}
+
+/* ==================== APP HEADER ==================== */
+.app-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border-light);
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.brand-icon-box {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(135deg, var(--primary) 0%, #3730a3 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 18px;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+}
+.brand-text h1 {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text-title);
+    letter-spacing: -0.3px;
+    line-height: 1.1;
+}
+.brand-text span {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.header-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-light);
+    background: var(--bg-surface);
+    color: var(--text-title);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.15s ease;
+}
+.header-btn:active {
+    transform: scale(0.92);
+    background: var(--bg-surface-active);
+}
+
+/* ==================== TELEGRAM COMMUNITY BANNER ==================== */
+.telegram-card {
+    margin: 14px 16px 6px 16px;
+    background: linear-gradient(135deg, #ffffff 0%, var(--telegram-subtle) 100%);
+    border: 1.5px solid #b9e3fc;
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: var(--shadow-md);
+}
+.tg-header-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.tg-icon {
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, var(--telegram) 0%, #0077b5 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 20px;
+    box-shadow: 0 4px 14px rgba(0, 136, 204, 0.3);
+    flex-shrink: 0;
+}
+.tg-info h3 {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--text-title);
+}
+.tg-info p {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-muted);
+    line-height: 1.35;
+    margin-top: 2px;
+}
+.btn-tg-join {
+    background: linear-gradient(135deg, var(--telegram) 0%, #006da6 100%);
+    color: #ffffff;
+    text-decoration: none;
+    padding: 11px 16px;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(0, 136, 204, 0.25);
+    border: none;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+}
+.btn-tg-join:active {
+    transform: scale(0.97);
+}
+
+/* ==================== SEGMENTED APP NAVIGATION TABS ==================== */
+.app-tabs-container {
+    padding: 10px 16px 6px 16px;
+}
+.app-tabs-segment {
+    background: #e2e8f0;
+    border-radius: var(--radius-md);
+    padding: 4px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+.tab-action-btn {
+    border: none;
+    background: transparent;
+    padding: 12px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.tab-action-btn i {
+    font-size: 14px;
+}
+.tab-action-btn.active {
+    background: #ffffff;
+    color: var(--primary);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.tab-action-btn.active i {
+    color: var(--primary);
+}
+
+/* ==================== VIEW SECTIONS ==================== */
+.tab-view-content {
+    display: none;
+    flex-direction: column;
+    gap: 14px;
+    padding: 10px 16px 30px 16px;
+    animation: fadeInView 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.tab-view-content.active {
+    display: flex;
+}
+@keyframes fadeInView {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==================== APP CARDS & STATS ==================== */
+.app-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-card);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: var(--shadow-sm);
+}
+
+.card-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.card-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text-title);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Stats 2x2 Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+.stat-box {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-card);
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: var(--shadow-sm);
+}
+.stat-box-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.stat-icon-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+.stat-number {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text-title);
+    font-family: 'JetBrains Mono', monospace;
+}
+.stat-text {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.3px;
+}
+.stat-bar-track {
+    width: 100%;
+    height: 4px;
+    background: #f1f5f9;
+    border-radius: 99px;
+    overflow: hidden;
+}
+.stat-bar-fill {
+    height: 100%;
+    border-radius: 99px;
+}
+
+/* ==================== FORM INPUTS ==================== */
+.app-textarea {
+    width: 100%;
+    background: var(--bg-surface-subtle);
+    border: 1.5px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 12px;
+    font-size: 12px;
+    color: var(--text-title);
+    min-height: 100px;
+    outline: none;
+    resize: vertical;
+    transition: all 0.2s ease;
+}
+.app-textarea:focus {
+    background: #ffffff;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-subtle);
+}
+
+.app-input {
+    width: 100%;
+    background: var(--bg-surface-subtle);
+    border: 1.5px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--text-title);
+    outline: none;
+    transition: all 0.2s ease;
+}
+.app-input:focus {
+    background: #ffffff;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-subtle);
+}
+
+/* ==================== BUTTONS & ACTIONS ==================== */
+.btn-solid {
+    border: none;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-weight: 700;
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: transform 0.1s ease, box-shadow 0.15s ease;
+    box-shadow: var(--shadow-sm);
+    white-space: nowrap;
+}
+.btn-solid:active { transform: scale(0.96); }
+
+.bg-btn-indigo { background: linear-gradient(135deg, var(--primary) 0%, #4338ca 100%); }
+.bg-btn-cyan { background: linear-gradient(135deg, var(--accent-cyan) 0%, #0369a1 100%); }
+.bg-btn-emerald { background: linear-gradient(135deg, var(--accent-emerald) 0%, #047857 100%); }
+.bg-btn-rose { background: linear-gradient(135deg, var(--accent-rose) 0%, #be123c 100%); }
+
+.action-buttons-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+/* Filter segment */
+.filter-pill-bar {
+    display: flex;
+    background: #f1f5f9;
+    padding: 4px;
+    border-radius: var(--radius-sm);
+    gap: 4px;
+}
+.filter-pill-btn {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 6px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.filter-pill-btn.active {
+    background: #ffffff;
+    color: var(--primary);
+    box-shadow: var(--shadow-sm);
+}
+
+/* ==================== NUMBER LIST ITEM CARDS ==================== */
+.numbers-scroll-box {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 380px;
+    overflow-y: auto;
+    padding-right: 2px;
+}
+.number-row-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+.number-row-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.number-country-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-title);
+    background: #f8fafc;
+    padding: 3px 8px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+}
+.number-display {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-title);
+    letter-spacing: 0.5px;
+}
+.number-row-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px dashed var(--border-light);
+    padding-top: 6px;
+}
+
+.status-badge {
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 9px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.status-copied { background: var(--accent-emerald-subtle); color: var(--accent-emerald); }
+.status-pending { background: var(--accent-amber-subtle); color: var(--accent-amber); }
+
+/* ==================== CLI / PROJECT CARDS ==================== */
+.cli-search-wrapper {
+    position: relative;
+    width: 100%;
+}
+.cli-search-wrapper input {
+    width: 100%;
+    padding: 12px 14px 12px 38px;
+    border-radius: var(--radius-md);
+    border: 1.5px solid var(--border-light);
+    background: var(--bg-surface-subtle);
+    font-size: 13px;
+    color: var(--text-title);
+    outline: none;
+    transition: all 0.2s ease;
+}
+.cli-search-wrapper input:focus {
+    background: #ffffff;
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 0 3px var(--accent-cyan-subtle);
+}
+.cli-search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--accent-cyan);
+    font-size: 14px;
+}
+
+.cli-list-scroll {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 520px;
+    overflow-y: auto;
+    padding-right: 2px;
+}
+.project-item-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-card);
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: var(--shadow-sm);
+}
+.project-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.project-name {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--text-title);
+    text-transform: capitalize;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.project-badges {
+    display: flex;
+    gap: 6px;
+}
+.mini-badge {
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: var(--accent-emerald-subtle);
+    color: var(--accent-emerald);
+}
+.project-button-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+}
+.btn-mini-action {
+    padding: 7px 4px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.btn-mini-action:active { transform: scale(0.95); }
+.btn-mini-copy { background: #f1f5f9; color: var(--primary); border-color: #cbd5e1; }
+.btn-mini-web { background: var(--accent-cyan-subtle); color: var(--accent-cyan); border-color: #bae6fd; }
+.btn-mini-app { background: var(--accent-emerald-subtle); color: var(--accent-emerald); border-color: #a7f3d0; }
+
+/* ==================== WORKSPACE SIDEBAR DRAWER ==================== */
+.sidebar-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(4px);
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+.sidebar-overlay.open { opacity: 1; pointer-events: auto; }
+
+.app-drawer {
+    position: fixed;
+    top: 0; left: -300px;
+    width: 290px;
+    height: 100vh;
+    background: #ffffff;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 16px;
+    gap: 16px;
+    box-shadow: var(--shadow-lg);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.app-drawer.open { transform: translateX(300px); }
+
+.ws-item-card {
+    background: var(--bg-surface-subtle);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    cursor: pointer;
+}
+.ws-item-card.active {
+    background: var(--primary-subtle);
+    border-color: var(--primary);
+}
+
+/* ==================== TOAST NOTIFICATIONS ==================== */
+.toast-stack {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 999999;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.app-toast {
+    background: #ffffff;
+    border-left: 4px solid var(--primary);
+    border: 1px solid var(--border-light);
+    border-left-width: 4px;
+    border-left-color: var(--primary);
+    color: var(--text-title);
+    padding: 10px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 700;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: slideInToast 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes slideInToast {
+    from { opacity: 0; transform: translateX(30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* ==================== MODAL DIALOG ==================== */
+.app-modal-backdrop {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(4px);
+    z-index: 999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+.app-modal-backdrop.active { opacity: 1; pointer-events: auto; }
+.app-modal-box {
+    background: #ffffff;
+    border-radius: var(--radius-lg);
+    padding: 22px;
+    width: 90%;
+    max-width: 340px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-light);
+}
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+</style>
+</head>
+
+<body>
+
+<!-- PRELOADER -->
+<div id="appPreloader">
+    <div class="loader-app-icon">
+        <i class="fa-solid fa-layer-group"></i>
+    </div>
+    <div style="font-size:16px; font-weight:800; color:var(--text-title);">SMSIFY HUB</div>
+    <div class="loader-spinner-bar"></div>
+</div>
+
+<div class="toast-stack" id="toastContainer"></div>
+
+<!-- MODAL DIALOG -->
+<div class="app-modal-backdrop" id="modalDialog">
+    <div class="app-modal-box">
+        <div style="display:flex; align-items:center; gap:8px; font-size:15px; font-weight:800; color:var(--text-title);" id="modalTitle">
+            <i class="fa-solid fa-circle-exclamation" style="color:var(--accent-rose);"></i> Confirmation
+        </div>
+        <div style="font-size:12px; color:var(--text-muted); line-height:1.4;" id="modalMessage">
+            Are you sure you want to proceed?
+        </div>
+        <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:4px;">
+            <button class="btn-solid" style="background:#f1f5f9; color:var(--text-body);" onclick="closeConfirmModal(false)">Cancel</button>
+            <button class="btn-solid bg-btn-rose" id="modalConfirmAction">Confirm</button>
+        </div>
+    </div>
+</div>
+
+<!-- WORKSPACE SLIDE DRAWER -->
+<div class="sidebar-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
+<div class="app-drawer" id="drawerSidebar">
+    <div style="display:flex; align-items:center; justify-content:space-between; padding-bottom:12px; border-bottom:1px solid var(--border-light);">
+        <div style="font-size:15px; font-weight:800; color:var(--text-title); display:flex; align-items:center; gap:8px;">
+            <i class="fa-solid fa-box-archive" style="color:var(--primary);"></i> Saved Workspaces
+        </div>
+        <button class="header-btn" onclick="toggleDrawer()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div style="overflow-y:auto; flex:1;" id="drawerWorkspaceList"></div>
+</div>
+
+<!-- APP WRAPPER -->
+<div class="mobile-app-frame">
+
+    <!-- Top App Bar -->
+    <header class="app-header">
+        <div class="header-brand">
+            <div class="brand-icon-box">
+                <i class="fa-solid fa-cubes-stacked"></i>
+            </div>
+            <div class="brand-text">
+                <h1>SMSIFY HUB</h1>
+                <span>Official App Engine</span>
+            </div>
+        </div>
+        <button class="header-btn" onclick="toggleDrawer()" title="Workspaces">
+            <i class="fa-solid fa-folder-open" style="color:var(--primary);"></i>
+        </button>
+    </header>
+
+    <!-- Telegram Official Group Banner -->
+    <div class="telegram-card">
+        <div class="tg-header-row">
+            <div class="tg-icon"><i class="fa-brands fa-telegram"></i></div>
+            <div class="tg-info">
+                <h3>SMSify Hub Public</h3>
+                <p>সব লেটেস্ট আপডেট, সাপোর্ট ও ডেইলি প্রজেক্ট নোটিফিকেশন পেতে আমাদের গ্রুপে জয়েন করুন।</p>
+            </div>
+        </div>
+        <!-- অফিসিয়াল টেলিগ্রাম গ্রুপ লিঙ্ক -->
+        <a href="https://t.me/SMSify_Hub_Public" target="_blank" class="btn-tg-join" onclick="playHaptic()">
+            <i class="fa-brands fa-telegram"></i> Join Telegram 
+        </a>
+    </div>
+
+    <!-- 2 Navigation Tabs -->
+    <div class="app-tabs-container">
+        <div class="app-tabs-segment">
+            <button class="tab-action-btn active" id="btnTabNumbers" onclick="switchAppTab('numbers')">
+                <i class="fa-solid fa-phone-volume"></i> My Number
+            </button>
+            <button class="tab-action-btn" id="btnTabCli" onclick="switchAppTab('cli')">
+                <i class="fa-solid fa-magnifying-glass-chart"></i> CLI সার্চ
+            </button>
+        </div>
+    </div>
+
+    <!-- ==================== TAB 1: MY NUMBER ENGINE ==================== -->
+    <main class="tab-view-content active" id="viewNumbers">
+
+        <!-- 2x2 Stats Summary Grid -->
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-box-top">
+                    <div class="stat-icon-badge" style="background:var(--accent-cyan-subtle); color:var(--accent-cyan);"><i class="fa-solid fa-chart-pie"></i></div>
+                    <div class="stat-number" id="numTotal">0</div>
+                </div>
+                <div class="stat-text">TOTAL NUMBERS</div>
+                <div class="stat-bar-track"><div class="stat-bar-fill" style="width: 100%; background: var(--accent-cyan);"></div></div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-box-top">
+                    <div class="stat-icon-badge" style="background:var(--primary-subtle); color:var(--primary);"><i class="fa-solid fa-check-double"></i></div>
+                    <div class="stat-number" id="numCopied">0</div>
+                </div>
+                <div class="stat-text">COPIED NUMBERS</div>
+                <div class="stat-bar-track"><div class="stat-bar-fill" style="width: 100%; background: var(--primary);"></div></div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-box-top">
+                    <div class="stat-icon-badge" style="background:var(--accent-amber-subtle); color:var(--accent-amber);"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                    <div class="stat-number" id="numPending">0</div>
+                </div>
+                <div class="stat-text">PENDING NUMBERS</div>
+                <div class="stat-bar-track"><div class="stat-bar-fill" style="width: 100%; background: var(--accent-amber);"></div></div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-box-top">
+                    <div class="stat-icon-badge" style="background:var(--accent-emerald-subtle); color:var(--accent-emerald);"><i class="fa-solid fa-earth-americas"></i></div>
+                    <div class="stat-number" id="numCountries">0</div>
+                </div>
+                <div class="stat-text">COUNTRIES</div>
+                <div class="stat-bar-track"><div class="stat-bar-fill" style="width: 100%; background: var(--accent-emerald);"></div></div>
+            </div>
+        </div>
+
+        <!-- Input & Save -->
+        <div class="app-card">
+            <div class="card-title"><i class="fa-solid fa-clipboard-list" style="color:var(--primary);"></i> Paste Data Here</div>
+            <textarea id="rawNumbersInput" class="app-textarea" placeholder="নাম্বার বা মেসেজ লিস্ট পেস্ট করুন..." oninput="parseNumberData()"></textarea>
+            <div style="display:flex; gap:8px;">
+                <input type="text" id="workspaceNameInput" class="app-input" placeholder="Workspace Title (e.g. Batch 01)">
+                <button class="btn-solid bg-btn-indigo" onclick="saveCurrentWorkspace()"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+            </div>
+        </div>
+
+        <!-- Numbers List & Filters -->
+        <div class="app-card">
+            <div style="position:relative;">
+                <input type="text" id="numberSearchQuery" class="app-input" style="padding-left:34px;" placeholder="Search by number or country..." oninput="filterNumbersList()">
+                <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-light); font-size:12px;"></i>
+            </div>
+            
+            <div class="filter-pill-bar">
+                <button class="filter-pill-btn active" id="btnFilterAll" onclick="applyNumberFilter('all')">All</button>
+                <button class="filter-pill-btn" id="btnFilterPending" onclick="applyNumberFilter('pending')">Pending</button>
+                <button class="filter-pill-btn" id="btnFilterCopied" onclick="applyNumberFilter('copied')">Copied</button>
+            </div>
+
+            <div class="numbers-scroll-box" id="numbersContainer"></div>
+        </div>
+
+        <!-- Prefix & Action Tools -->
+        <div class="app-card">
+            <div class="card-title"><i class="fa-solid fa-wand-magic-sparkles" style="color:var(--primary);"></i> Prefix & Tools</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                <input type="text" id="prefixRemoveVal" class="app-input" placeholder="Remove Prefix (e.g. 880)">
+                <input type="text" id="prefixAddVal" class="app-input" placeholder="Add Prefix (e.g. 880)">
+            </div>
+            <div class="action-buttons-grid">
+                <button class="btn-solid bg-btn-indigo" onclick="actionRemovePrefix()"><i class="fa-solid fa-eraser"></i> Remove Prefix</button>
+                <button class="btn-solid bg-btn-emerald" onclick="actionAddPrefix()"><i class="fa-solid fa-plus"></i> Add Prefix</button>
+                <button class="btn-solid bg-btn-emerald" onclick="actionModifyPlus(true)"><i class="fa-solid fa-circle-plus"></i> Add '+'</button>
+                <button class="btn-solid bg-btn-rose" onclick="actionModifyPlus(false)"><i class="fa-solid fa-circle-minus"></i> Remove '+'</button>
+                <button class="btn-solid bg-btn-cyan" onclick="actionDeduplicate()"><i class="fa-solid fa-clone"></i> Deduplicate</button>
+                <button class="btn-solid bg-btn-indigo" onclick="actionCopyAllPending()"><i class="fa-solid fa-clipboard-check"></i> Copy Pending</button>
+                <button class="btn-solid bg-btn-cyan" onclick="actionExportTxt()"><i class="fa-solid fa-file-arrow-down"></i> Download TXT</button>
+                <button class="btn-solid bg-btn-rose" onclick="actionClearAll()"><i class="fa-solid fa-trash-can"></i> Clear All</button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ==================== TAB 2: CLI PROJECT SEARCH ==================== -->
+    <main class="tab-view-content" id="viewCli">
+        <div class="app-card">
+            <div class="card-title"><i class="fa-solid fa-network-wired" style="color:var(--accent-cyan);"></i> CLI Project Finder</div>
+            <div class="cli-search-wrapper">
+                <i class="fa-solid fa-magnifying-glass cli-search-icon"></i>
+                <input type="text" id="cliSearchQuery" placeholder="Search prefix or name (e.g., 1688, waha, binance)..." oninput="executeCliSearch()">
+            </div>
+            <div class="cli-list-scroll" id="cliResultsContainer"></div>
+        </div>
+    </main>
+
+</div>
+
+<script>
+/* ==================== WEB AUDIO API (NO EXTERNAL AUDIO FILES) ==================== */
+const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null;
+
+function initAudio() {
+    if (!audioCtx) audioCtx = new AudioContextClass();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+}
+
+// Subtle UI click / tap sound
+function playHaptic() {
+    try {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.04);
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.04);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.04);
+    } catch(e){}
+}
+
+// Success beep sound
+function playSuccessSound() {
+    try {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.06); // A5
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.15);
+    } catch(e){}
+}
+
+// Delete sound
+function playDeleteSound() {
+    try {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.08);
+    } catch(e){}
+}
+
+// Attach sound to all buttons automatically
+document.addEventListener('click', (e) => {
+    if (e.target.closest('button') || e.target.closest('a')) {
+        playHaptic();
+    }
+});
+
+/* ==================== PRELOADER ==================== */
+window.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        const preloader = document.getElementById('appPreloader');
+        if (preloader) preloader.classList.add('hide');
+    }, 300);
+});
+
+/* ==================== TAB NAVIGATION ==================== */
+function switchAppTab(tab) {
+    const isNum = tab === 'numbers';
+    document.getElementById('btnTabNumbers').classList.toggle('active', isNum);
+    document.getElementById('btnTabCli').classList.toggle('active', !isNum);
+    document.getElementById('viewNumbers').classList.toggle('active', isNum);
+    document.getElementById('viewCli').classList.toggle('active', !isNum);
+}
+
+/* ==================== TOAST & MODAL SYSTEM ==================== */
+function triggerToast(text, icon = 'fa-solid fa-circle-check') {
+    const box = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = 'app-toast';
+    toast.innerHTML = `<i class="${icon}" style="color:var(--primary);"></i> <span>${text}</span>`;
+    box.appendChild(toast);
+    setTimeout(() => toast.remove(), 2000);
+}
+
+let activeConfirmCallback = null;
+function openConfirmModal(title, msg, onConfirm) {
+    document.getElementById('modalTitle').innerHTML = `<i class="fa-solid fa-triangle-exclamation" style="color:var(--accent-rose);"></i> ${title}`;
+    document.getElementById('modalMessage').innerText = msg;
+    activeConfirmCallback = onConfirm;
+    document.getElementById('modalDialog').classList.add('active');
+}
+function closeConfirmModal(proceed) {
+    document.getElementById('modalDialog').classList.remove('active');
+    if (proceed && activeConfirmCallback) activeConfirmCallback();
+    activeConfirmCallback = null;
+}
+document.getElementById('modalConfirmAction').onclick = () => closeConfirmModal(true);
+
+function toggleDrawer() {
+    document.getElementById('drawerSidebar').classList.toggle('open');
+    document.getElementById('drawerOverlay').classList.toggle('open');
+}
+
+/* ==================== WORLDWIDE COUNTRY DATABASE (NO EMOJIS - PURE ICONS) ==================== */
+const countryIcons = {
+    "Bangladesh": "fa-solid fa-location-dot",
+    "United States": "fa-solid fa-flag-usa",
+    "USA": "fa-solid fa-flag-usa",
+    "India": "fa-solid fa-landmark",
+    "United Kingdom": "fa-solid fa-crown",
+    "UK": "fa-solid fa-crown",
+    "Canada": "fa-solid fa-leaf",
+    "Australia": "fa-solid fa-earth-oceania",
+    "Germany": "fa-solid fa-car",
+    "France": "fa-solid fa-tower-observation",
+    "Russia": "fa-solid fa-shield",
+    "China": "fa-solid fa-dragon",
+    "Brazil": "fa-solid fa-futbol",
+    "Saudi Arabia": "fa-solid fa-mosque",
+    "UAE": "fa-solid fa-building",
+    "United Arab Emirates": "fa-solid fa-building",
+    "Pakistan": "fa-solid fa-moon",
+    "Indonesia": "fa-solid fa-tree",
+    "Nigeria": "fa-solid fa-earth-africa",
+    "Egypt": "fa-solid fa-monument",
+    "Turkey": "fa-solid fa-star-and-crescent",
+    "South Africa": "fa-solid fa-gem",
+    "Malaysia": "fa-solid fa-city",
+    "Vietnam": "fa-solid fa-star",
+    "Thailand": "fa-solid fa-bell",
+    "Philippines": "fa-solid fa-sun",
+    "Kenya": "fa-solid fa-paw",
+    "Argentina": "fa-solid fa-mountain",
+    "Colombia": "fa-solid fa-coffee",
+    "Spain": "fa-solid fa-bullhorn",
+    "Italy": "fa-solid fa-pizza-slice",
+    "Ukraine": "fa-solid fa-wheat-awn",
+    "Poland": "fa-solid fa-feather",
+    "Morocco": "fa-solid fa-compass",
+    "Algeria": "fa-solid fa-archway",
+    "Tunisia": "fa-solid fa-water",
+    "Qatar": "fa-solid fa-building-columns",
+    "Kuwait": "fa-solid fa-coins",
+    "Oman": "fa-solid fa-dungeon",
+    "Bahrain": "fa-solid fa-ship",
+    "Japan": "fa-solid fa-torii-gate",
+    "South Korea": "fa-solid fa-bolt-lightning",
+    "Singapore": "fa-solid fa-anchor"
+};
+
+// Dialing codes mapping
+const countryDialCodes = [
+    { name: "Bangladesh", code: "880" },
+    { name: "India", code: "91" },
+    { name: "Pakistan", code: "92" },
+    { name: "USA", code: "1" },
+    { name: "United Kingdom", code: "44" },
+    { name: "Saudi Arabia", code: "966" },
+    { name: "UAE", code: "971" },
+    { name: "Russia", code: "7" },
+    { name: "Indonesia", code: "62" },
+    { name: "Malaysia", code: "60" },
+    { name: "Philippines", code: "63" },
+    { name: "Nigeria", code: "234" },
+    { name: "Egypt", code: "20" },
+    { name: "Turkey", code: "90" },
+    { name: "Vietnam", code: "84" },
+    { name: "Thailand", code: "66" },
+    { name: "Germany", code: "49" },
+    { name: "France", code: "33" },
+    { name: "Brazil", code: "55" },
+    { name: "South Africa", code: "27" },
+    { name: "Canada", code: "1" },
+    { name: "Kenya", code: "254" },
+    { name: "Morocco", code: "212" },
+    { name: "Algeria", code: "213" },
+    { name: "Tunisia", code: "216" },
+    { name: "Qatar", code: "974" },
+    { name: "Kuwait", code: "965" },
+    { name: "Oman", code: "968" }
+];
+
+function detectCountryUnified(text, num) {
+    if (!text && !num) return "Global";
+    for (let c in countryIcons) {
+        if (text && text.toLowerCase().includes(c.toLowerCase())) return c;
+    }
+    const clean = num ? num.replace(/^\+/, '') : '';
+    for (let item of countryDialCodes) {
+        if (clean.startsWith(item.code)) return item.name;
+    }
+    let match = text ? text.trim().match(/^([A-Za-z]+)/) : null;
+    return match ? match[1] : "Global";
+}
+
+/* ==================== NUMBER WORKSPACES & LOGIC ==================== */
+let numberItems = [];
+let savedWorkspaces = JSON.parse(localStorage.getItem('smsify_hub_ws_db')) || [
+    { name: "Primary Batch", items: [] }
+];
+let activeWorkspaceIndex = 0;
+let activeFilter = 'all';
+
+function parseNumberData() {
+    activeWorkspaceIndex = -1;
+    const raw = document.getElementById('rawNumbersInput').value;
+    const lines = raw.split('\n');
+    numberItems = [];
+
+    lines.forEach(line => {
+        const trimmed = line.trim();
+        if (!trimmed) return;
+        const matches = trimmed.match(/\d{8,16}/g);
+        if (matches && matches.length > 0) {
+            const target = matches.reduce((a, b) => a.length >= b.length ? a : b);
+            const country = detectCountryUnified(trimmed, target);
+            numberItems.push({ number: target, country: country, copied: false });
+        }
+    });
+
+    renderWorkspaceDrawer();
+    renderNumbersDisplay();
+}
+
+function applyNumberFilter(type) {
+    activeFilter = type;
+    document.getElementById('btnFilterAll').classList.toggle('active', type === 'all');
+    document.getElementById('btnFilterPending').classList.toggle('active', type === 'pending');
+    document.getElementById('btnFilterCopied').classList.toggle('active', type === 'copied');
+    renderNumbersDisplay();
+}
+
+function filterNumbersList() {
+    renderNumbersDisplay();
+}
+
+function renderNumbersDisplay() {
+    const container = document.getElementById('numbersContainer');
+    container.innerHTML = '';
+    const query = document.getElementById('numberSearchQuery').value.trim().toLowerCase();
+    
+    let copiedCount = 0;
+    const countrySet = new Set();
+
+    numberItems.forEach(i => {
+        if (i.copied) copiedCount++;
+        countrySet.add(i.country);
+    });
+
+    const filtered = numberItems.filter(i => {
+        const matchesQuery = i.number.toLowerCase().includes(query) || i.country.toLowerCase().includes(query);
+        if (!matchesQuery) return false;
+        if (activeFilter === 'pending') return !i.copied;
+        if (activeFilter === 'copied') return i.copied;
+        return true;
+    });
+
+    if (filtered.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:24px; font-size:12px; color:var(--text-muted);"><i class="fa-solid fa-inbox" style="font-size:24px; margin-bottom:6px; display:block; color:var(--text-light);"></i> No numbers found.</div>`;
+    }
+
+    filtered.forEach((item, idx) => {
+        const iconClass = countryIcons[item.country] || "fa-solid fa-globe";
+        const card = document.createElement('div');
+        card.className = 'number-row-card';
+        card.innerHTML = `
+            <div class="number-row-top">
+                <div class="number-country-badge">
+                    <i class="${iconClass}" style="color:var(--primary);"></i>
+                    <span>${item.country}</span>
+                </div>
+                <div class="number-display">${item.number}</div>
+            </div>
+            <div class="number-row-bottom">
+                <span class="status-badge ${item.copied ? 'status-copied' : 'status-pending'}">
+                    <i class="fa-solid ${item.copied ? 'fa-check' : 'fa-hourglass-start'}"></i>
+                    ${item.copied ? 'Copied' : 'Pending'}
+                </span>
+                <div style="display:flex; gap:6px;">
+                    <button class="btn-solid ${item.copied ? 'bg-btn-emerald' : 'bg-btn-cyan'}" style="padding:4px 10px; font-size:10px;" onclick="copySingleNumber('${item.number}')">
+                        <i class="fa-solid fa-copy"></i> ${item.copied ? 'Copied' : 'Copy'}
+                    </button>
+                    <button class="btn-solid bg-btn-rose" style="padding:4px 8px; font-size:10px;" onclick="deleteSingleNumber('${item.number}')">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    document.getElementById('numTotal').innerText = numberItems.length;
+    document.getElementById('numCopied').innerText = copiedCount;
+    document.getElementById('numPending').innerText = numberItems.length - copiedCount;
+    document.getElementById('numCountries').innerText = countrySet.size;
+}
+
+function copySingleNumber(num) {
+    navigator.clipboard.writeText(num);
+    const itm = numberItems.find(x => x.number === num);
+    if (itm) {
+        itm.copied = true;
+        syncActiveWorkspace();
+        renderNumbersDisplay();
+        playSuccessSound();
+        triggerToast("Copied: " + num);
+    }
+}
+
+function deleteSingleNumber(num) {
+    openConfirmModal("Delete Number", `Are you sure you want to remove ${num}?`, () => {
+        numberItems = numberItems.filter(x => x.number !== num);
+        syncActiveWorkspace();
+        renderNumbersDisplay();
+        playDeleteSound();
+        triggerToast("Number removed");
+    });
+}
+
+function actionCopyAllPending() {
+    const list = numberItems.filter(x => !x.copied).map(x => x.number);
+    if (list.length === 0) return triggerToast("No pending numbers", "fa-solid fa-circle-exclamation");
+    navigator.clipboard.writeText(list.join('\n'));
+    numberItems.forEach(x => x.copied = true);
+    syncActiveWorkspace();
+    renderNumbersDisplay();
+    playSuccessSound();
+    triggerToast(`Copied ${list.length} pending numbers`);
+}
+
+function actionRemovePrefix() {
+    const p = document.getElementById('prefixRemoveVal').value.trim();
+    if (!p) return;
+    numberItems.forEach(i => {
+        if (i.number.startsWith(p)) i.number = i.number.slice(p.length);
+    });
+    syncActiveWorkspace();
+    renderNumbersDisplay();
+    playSuccessSound();
+    triggerToast(`Removed prefix '${p}'`);
+}
+
+function actionAddPrefix() {
+    const p = document.getElementById('prefixAddVal').value.trim();
+    if (!p) return;
+    numberItems.forEach(i => { i.number = p + i.number; });
+    syncActiveWorkspace();
+    renderNumbersDisplay();
+    playSuccessSound();
+    triggerToast(`Added prefix '${p}'`);
+}
+
+function actionModifyPlus(add) {
+    numberItems.forEach(i => {
+        if (add && !i.number.startsWith('+')) i.number = '+' + i.number;
+        if (!add) i.number = i.number.replace(/^\+/, '');
+    });
+    syncActiveWorkspace();
+    renderNumbersDisplay();
+    playSuccessSound();
+    triggerToast(add ? "Added '+' to numbers" : "Removed '+'");
+}
+
+function actionDeduplicate() {
+    const initial = numberItems.length;
+    const seen = new Set();
+    numberItems = numberItems.filter(i => {
+        if (seen.has(i.number)) return false;
+        seen.add(i.number);
+        return true;
+    });
+    syncActiveWorkspace();
+    renderNumbersDisplay();
+    playSuccessSound();
+    triggerToast(`Cleaned ${initial - numberItems.length} duplicates`);
+}
+
+function actionClearAll() {
+    openConfirmModal("Clear Workspace", "Are you sure you want to clear all numbers?", () => {
+        numberItems = [];
+        document.getElementById('rawNumbersInput').value = '';
+        syncActiveWorkspace();
+        renderNumbersDisplay();
+        playDeleteSound();
+        triggerToast("Workspace cleared");
+    });
+}
+
+function actionExportTxt() {
+    if (numberItems.length === 0) return triggerToast("No numbers to export", "fa-solid fa-circle-exclamation");
+    const blob = new Blob([numberItems.map(x => x.number).join('\n')], { type: 'text/plain' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `numbers_smsify_${Date.now()}.txt`;
+    link.click();
+    playSuccessSound();
+    triggerToast("TXT file exported");
+}
+
+function saveCurrentWorkspace() {
+    const name = document.getElementById('workspaceNameInput').value.trim() || `Workspace ${savedWorkspaces.length + 1}`;
+    if (numberItems.length === 0) return triggerToast("Workspace has no data", "fa-solid fa-circle-exclamation");
+    savedWorkspaces.push({ name: name, items: JSON.parse(JSON.stringify(numberItems)) });
+    activeWorkspaceIndex = savedWorkspaces.length - 1;
+    localStorage.setItem('smsify_hub_ws_db', JSON.stringify(savedWorkspaces));
+    renderWorkspaceDrawer();
+    playSuccessSound();
+    triggerToast("Workspace saved successfully");
+}
+
+function syncActiveWorkspace() {
+    if (activeWorkspaceIndex >= 0 && savedWorkspaces[activeWorkspaceIndex]) {
+        savedWorkspaces[activeWorkspaceIndex].items = JSON.parse(JSON.stringify(numberItems));
+        localStorage.setItem('smsify_hub_ws_db', JSON.stringify(savedWorkspaces));
+        renderWorkspaceDrawer();
+    }
+}
+
+function renderWorkspaceDrawer() {
+    const box = document.getElementById('drawerWorkspaceList');
+    box.innerHTML = '';
+    savedWorkspaces.forEach((ws, idx) => {
+        const item = document.createElement('div');
+        item.className = `ws-item-card ${idx === activeWorkspaceIndex ? 'active' : ''}`;
+        item.innerHTML = `
+            <div style="display:flex; align-items:center; gap:8px;" onclick="loadWorkspace(${idx})">
+                <i class="fa-solid fa-folder-closed" style="color:var(--primary);"></i>
+                <div>
+                    <div style="font-size:12px; font-weight:700; color:var(--text-title);">${ws.name}</div>
+                    <div style="font-size:10px; color:var(--text-muted);">${ws.items.length} Numbers</div>
+                </div>
+            </div>
+            <button class="btn-solid bg-btn-rose" style="padding:4px 8px; font-size:10px;" onclick="deleteWorkspaceItem(${idx})">
+                <i class="fa-solid fa-trash"></i>
+            </button>
+        `;
+        box.appendChild(item);
+    });
+}
+
+function loadWorkspace(idx) {
+    activeWorkspaceIndex = idx;
+    numberItems = JSON.parse(JSON.stringify(savedWorkspaces[idx].items));
+    renderWorkspaceDrawer();
+    renderNumbersDisplay();
+    toggleDrawer();
+    playSuccessSound();
+    triggerToast(`Loaded: ${savedWorkspaces[idx].name}`);
+}
+
+function deleteWorkspaceItem(idx) {
+    openConfirmModal("Delete Workspace", "Delete this workspace permanently?", () => {
+        savedWorkspaces.splice(idx, 1);
+        if (activeWorkspaceIndex === idx) {
+            numberItems = [];
+            activeWorkspaceIndex = -1;
+        }
+        localStorage.setItem('smsify_hub_ws_db', JSON.stringify(savedWorkspaces));
+        renderWorkspaceDrawer();
+        renderNumbersDisplay();
+        playDeleteSound();
+        triggerToast("Workspace deleted");
+    });
+}
+
+/* ==================== 700+ RAW LIST FOR CLI PROJECT FINDER ==================== */
+const completeCliList = [
+    "1688", "4411", "115com", "11exch", "163som", "168bethk", "1kkirana", "1mg", "1q", "23red", "27asia", "2dehands", "32red", "3d66", "3fun", "4fun", "5696com", "5eplay", "789jackpotsagent", "7eleven", "888casino", "88pls", "99acres", "99app", "abvbg", "ace2three", "acko", "activision", "adani", "adda52", "adidas", "adobe", "adverts", "aeon", "agroinform", "aiqfome", "airasia", "airbnb", "airindia", "airtel", "airtime", "airwick", "aitu", "akelni", "akudo", "alchemy", "alfa", "alfagift", "alfamidi", "alfursan", "algida", "alibaba", "alibabacloud", "aliexpress", "alipay", "allegro", "allofresh", "allwin88", "alphax", "amasia", "amazon", "ambercars", "amio", "ampol", "amway", "angelone", "angi", "ankama", "anwen", "aol", "apollo", "appen", "appinio", "apple", "aqualudo", "arenaplus", "ari10", "arlens", "asdarewards", "ashleymadison", "astraotoshop", "astropay", "atlasearth", "attapoll", "auchan", "aukro", "aussui", "authy", "autodl", "autoplac", "avinoil", "avon", "axscom", "azar", "azino", "b4ucabs", "badoo", "baidu", "baihe", "bajajfinserv", "bananatok", "band", "banki", "banqi", "barq", "bazos", "bazr", "bcgame", "bearwww", "bebeclub", "beccric", "becharge", "beehiiv", "begroup", "benjamin", "benny", "bereal", "bestbuy", "bet365", "betano", "betfair", "betinin", "betpari", "betteropinion", "betvet", "biedronka", "bigbasket", "bigbazaar", "biggg", "bigolive", "biketown", "bilibili", "billmill", "binbin", "bingoplus", "bingostars", "binmo", "bip", "bisu", "bitaqaty", "bitclout", "bitexen", "bitlo", "bitso", "bittube", "blablacar", "blackbird", "blackcab", "blankstreet", "blibli", "blink", "blizzard", "blkapp", "blockchain", "blued", "bluerewards", "bluesky", "boddess", "boletomovil", "bolt", "bonchat", "boosty", "boots", "bosszhipin", "botim", "boyaa", "boylesports", "bpme", "brand20ua", "brax", "brevo", "bubblex", "bukalapak", "bumble", "burgerking", "bwin", "bykea", "byteplus", "cadbury", "cadburyperk", "cafebazaar", "caixa", "caliverse", "caltexgo", "cantina", "capitaloneshopping", "captain", "cardekho", "careem", "carousell", "carrefour", "cashkaro", "cashmine", "casinoandfriends", "casinoplus", "catawiki", "cathay", "ccghearts", "cdkeys", "cekkazan", "celebe", "centrum", "cgvcinemas", "chagee", "chaingefinance", "chakrarewards", "changyou", "chargepoint", "cheddar", "chippercash", "chispadatinglatinos", "chotot", "chromaawards", "cider", "cineplex", "citaprevia", "citybase", "citygo", "clapper", "classicrummy", "classpass", "claudeai", "clerk", "clickentregas", "cliqq", "cloudbet", "clove", "clubhouse", "clubq8", "cmtcuzdan", "cocacola", "cocco", "coches", "codashop", "codebuddy", "codeium", "coffeemeetsbagel", "coinbase", "coindcx", "coinfantasy", "coinfield", "cokeplus", "cokfiight", "coles", "collectionpot", "communitygaming", "connecting", "continente", "cornerstone", "cotticoffe", "coupang", "coursehero", "courtyard", "coverd", "coze", "craigslist", "crickpe", "crumblcookies", "crushrewards", "cryptocom", "cryptonow", "csair", "cupid", "cupp", "dagangan", "dairylea", "daki", "damai", "dana", "datezone", "daveshotchicken", "dbrua", "dbworld", "dealshare", "dechra", "deepseek", "deliveroo", "dent", "depop", "dewupoizon", "dhani", "didi", "digikala", "dilmil", "dingtalk", "discord", "discoverhongkong", "disneyhotstar", "distrokid", "divar", "dola", "domdara", "dominate11", "dominospizza", "donedeal", "doordash", "doorverse", "dopa", "dosi", "dott", "doubao", "douyu", "dream11", "driffle", "driveloyalty", "ds88hk", "duetapp", "dukascopy", "dundle", "dunkin", "dunzo", "duolingo", "dw1111", "earneasy", "earnify", "easypay", "eatclub", "ebay", "ebikegewinnspiel", "echo", "edgeless", "edufund", "efood", "efsanetr", "egets", "egopensooq", "elante", "electroneum", "eleme", "elevenhacks", "eliteludo", "emag", "emoney", "eneba", "enilive", "enjoei", "epicgames", "eplay24", "erome", "escapefromtarkov", "etmall", "etoto", "etsy", "eureka", "eurobet", "eventbrite", "ewargames", "eyecon", "ezbuy", "ezmall", "ezze", "facebook", "faceit", "factoryai", "fairtiq", "fairwood", "fambase", "fan2play", "fanatics", "fanplus", "fans", "farmcare", "fastmail", "fastmoss", "fave", "favorited", "fc8au", "fcgame88", "fdjparionssport", "feeld", "feels", "feetfinder", "fengsehuanxiang", "fetchrewards", "fetishfinder", "fiegame", "fieryplay", "fiesta", "fiewin", "fineartamerica", "finya", "fiqsy", "firecrawl", "fiverr", "fivesurveys", "flam", "flexpay", "flextv", "flink", "flip", "flipkart", "flitsmeister", "flypgs", "foliogames", "foodhub", "foodora", "foodpanda", "foody", "footdistrict", "footlocker", "forecoffee", "forest", "formeonline", "fortunask", "forwarding", "fotka", "fotocasa", "francemobilities", "fredagain", "freecharge", "freelancehunt", "freelancercom", "freenow", "friendtech", "frizza", "fruitz", "fuelcycle", "funnow", "g2acom", "g2g", "gabi", "gailsbakery", "galaxy", "galaxyticketing", "galaxywin", "game88hk", "gamearena", "gameboy88", "gameflip", "gamekit", "gamer", "gamerji", "gamezone", "gamezy", "gamsgo", "gaode", "gappx", "garena", "gcash", "geekay", "gemgala", "gemini", "genco", "gener8", "genspark", "get", "getir", "getninjas", "getplus", "getresponse", "getsbk", "gett", "gfkcom", "gg", "gg88hk", "gg88win", "gghasia", "ggpoker", "gitlab", "gittigidiyor", "givingli", "global24", "globaltel", "globus", "glovo", "glowroad", "gmngjourney", "gmx", "gofundme", "gojek", "goldbet", "google", "googlevoice", "gopuff", "gotgameai", "grabtaxi", "grailed", "green", "greggs", "grindr", "grofers", "groupme", "grover", "guicheweb", "gullyrummy", "gumloop", "gumtree", "gurubets", "guzmanygomez", "gyftr", "hacoo", "hamrahaval", "handypick", "handyticket", "haobanai", "hapi", "happn", "haraj", "healthandglow", "hellotalk", "hepsiburadacom", "hermes", "heybox", "heygen", "heymaxai", "hezzl", "hfmarkets", "highlands", "higo", "hily", "hinge", "hirect", "hitnspin", "hkgames88", "hkticketing", "hktvmall", "hongguoduanju", "hopbike", "hopi", "hopp", "hopper", "hornet", "hotel101", "hotline", "hotmail", "howzat", "hoyoverse", "hqtrivia", "huawei", "hubbl", "hudapp", "huionepay", "humblebundle", "humta", "hungerstation", "hungrypanda", "huya", "hyperbolic", "icard", "icecasino", "icicidirect", "icrypex", "idealhome", "idealista", "idolchamp", "ifood", "igamebuy", "igxe", "immoscout24", "immowelt", "immutableplay", "imo", "inboxlv", "incheoneasy", "inclave", "indeed", "indiagold", "indianoil", "indiaplays", "indibet", "indomaret", "indriver", "infinitepay", "infomaniak", "ingramspark", "ininal", "inpost", "inshallah", "insomniacookies", "inspirationclub", "instacart", "instagram", "intoverse", "investro", "iost", "iplwin", "ipsosisay", "iqiyi", "iqos", "irancell", "irctc", "isystem", "iwplay", "iyc", "jackaroo", "jaco", "jagocoffee", "jamesdelivery", "jbhifi", "jd", "jeet11", "jeevansathi", "jiomart", "jivapetani", "jkf", "jkjoker", "joejuice", "joybuy", "joymall", "joyride", "jspp", "jungleerummy", "justdating", "justdial", "justeat", "kaggle", "kaidee", "kaito", "kakaotalk", "kalshi", "kamatera", "kazandirio", "keeta", "keybase", "keypay", "kfc", "khelraja", "khmer24", "kiacom", "kimi", "kingpet", "kintogo", "kisma", "kktix", "klook", "kolesakz", "komodostation", "kopikenangan", "kopinako", "kotak811", "kucoinplay", "kufarby", "kwai", "kwiff", "lakme", "lalamove", "laposte", "laylo", "lazada", "lazypay", "lbry", "league", "leboncoin", "leigod", "lemon8", "leolist", "lianxin", "licentie2go", "licgames", "lidl", "lightchat", "lightningai", "likee", "lime", "line", "linkedin", "linode", "livescore", "livu", "lizbuyshouses", "locoff", "locogg", "loda", "lotoclub", "lottomatica", "loveisland", "lovelocal", "lovoo", "lowes", "luck", "luckincoffee", "luup", "lybrate", "lyft", "lyka", "macauticket", "madslots", "magicbricks", "magicpin", "magnolia", "mail2world", "mailuk", "mangot5", "mantrimall", "manus", "mapclub", "maplesea", "marktplaats", "match", "mcdonalds", "mchat", "me9", "medal", "medibuddy", "medium", "mediworld", "meeff", "meesho", "meetic", "meetme", "mega", "megapari", "megogo", "meiqfashion", "meitu", "meituan", "meliuz", "memelut", "meragaon", "mercado", "mercari", "meseems", "meta", "metro", "mewt", "michat", "microsoft", "midnite", "mihuashi", "milanuncios", "milkrun", "miloan", "minima", "miravia", "mirchi", "mistralai", "mlbcom", "mobikwik", "mobile01", "mobilede", "mocospace", "momo", "monese", "moneyback", "moneylion", "monoapp", "monobank", "monopolygo", "monsterenergy", "monta", "moomoo", "more", "morinaga", "mosgram", "mostbet", "motorkux", "move", "moveit", "mpanels", "mpl", "mrgreen", "mrsool", "mrvegas", "mulerun", "muzmu", "muzz", "my11circle", "mycapella", "myedenred", "myfab11", "myglo", "mygoplus", "myjar", "mylotteries", "mylove", "mymusictaste", "myntra", "mysabay", "myvalue", "mzadqatar", "nana", "nandos", "nativecamp", "naver", "ncsoft", "neighbor", "netease", "netflix", "netmarble", "netwin", "nexon", "nextdoor", "nham24", "nhseven", "nice88", "nielsen", "nifty", "nike", "nimo", "nimses", "nintendo", "njuskalo", "nobroker", "noon", "norstat", "nrjmusicawards", "nttgame", "nunstar", "nutribite", "nvidia", "nykaa", "offerup", "offgamers", "okbet", "okta", "okx", "olacabs", "oldubil", "olx", "omi", "oneforma", "oneplus", "onet", "onlinerby", "ontaxi", "openai", "openphone", "openpoint", "opera", "oppo", "oraclecloud", "oriflame", "other", "otipy", "otovinn", "ourbit", "outlier", "oyo", "ozan", "ozapay", "pacificcoffee", "paddypower", "pairs", "pampers", "panelstation", "panvel", "papaen", "papara", "paperspace", "parimatch", "partycasino", "passapp", "pawns", "paxful", "paycell", "paymaya", "paypal", "paysafecard", "paysend", "paytm", "payzapp", "pelago", "peoplecom", "perplexity", "pgbonus", "phable", "pharmeasy", "phoenix", "picnic", "picpay", "pikkit", "pinduoduo", "pingpong", "pinkbike", "pisos", "pixels", "pizzahut", "planetarium", "planetfans", "playerauctions", "playerzpot", "playojo", "playship", "playuzu", "plnmobile", "ploom", "pluxee", "pocketludo", "poeai", "pof", "poikey", "poke", "pokec", "pokermaster", "polymarket", "poparide", "popmart", "poppo", "poshmark", "potato", "powerkredite", "prajmeriz2020", "premiumbandai", "premiumone", "premmia", "prepaidgamer", "prezzee", "primeopinion", "probo", "prodege", "prom", "proton", "protonmail", "proxy302", "pubg", "publix", "pureplatfrom", "pyromusic", "q12trivia", "qantas", "qianwen", "qoo10", "qpon", "qqpk", "quack", "quikr", "quipp", "qumpara", "radiate", "radquest", "rainmaker", "rakuten", "rapido", "rappi", "ravpass", "razer", "realresearcher", "reblz", "rebtel", "receipthog", "redant", "redbook", "redbubble", "redbus", "reddit", "rediffmail", "reelskit", "reinbow", "relicdao", "remotasks", "resal", "retailmenot", "reuse", "revolut", "ride", "ridery", "riffusion", "riotgames", "ripkord", "roblox", "rocketnow", "rocketreach", "roposo", "rover", "royalwin", "rozetka", "rummy", "rummycircle", "rummyculture", "rummygold", "rummyloot", "rummywealth", "rush", "ryde", "sahicoin", "salams", "samsclub", "samsungshop", "santiao", "sapo", "scruff", "seamlessai", "seated", "seloger", "sendinblue", "sendwave", "seosprint", "serpapi", "seznam", "sgmid", "shabik", "shareparty", "shctyclub", "sheerid", "shein", "shellbox", "shiftsmart", "shopback", "shopee", "shopify", "showstart", "shpock", "signal", "sikayetvar", "sikka", "siliconflow", "singl", "siply", "sisal", "skelbiu", "skout", "skrill", "skybet", "skyjoy", "skype", "slotstars", "slott", "smitten", "snai", "snapchat", "snappfood", "sneakerboy", "sneakersnstuff", "snkrdunk", "snpit", "soarfun", "socios", "sonyliv", "soop", "sorare", "soulapp", "soulchill", "sparkdriver", "spartanpoker", "spinmillion29", "splitdrop", "sponline", "sportgully", "sportsbet", "sportsbuzz11", "spothit", "spotify", "spyfu", "ssoidnet", "stakemate", "starchatsite", "steam", "steemit", "stockx", "storewards", "subito", "substack", "suki", "suno", "superbet", "supercell", "supercom", "superlogin", "superwalk", "suprdaily", "surveoo", "surveyon", "surveytime", "swagbucks", "swash", "sweet", "swiftysports", "swiggy", "switips", "swvl", "synottip", "tada", "taimi", "taker", "taki", "taksheel", "talabat", "tamtam", "tango", "tantan", "taobao", "taptapsend", "taskdealsin", "taskverse", "tatacliq", "tatacliqpalette", "tataneu", "tatneft", "tcgplayer", "tealive", "teenpattirummy3", "teenpattistarpro", "telegram", "temtemone", "temu", "tencentqq", "tenrenstea", "tesco", "theconcert", "thefork", "theoremreach", "thinkacademy", "thisfate", "thumbtack", "thxapp", "ticketmaster", "ticketone", "ticketplus", "ticketswap", "tier", "tiktok", "timesprime", "tinder", "tipsportgamechanger", "tiptapp", "tokopedia", "tomatok", "tomorocoffe", "tongchengtravel", "toobit", "toprun", "tosla", "totalbet", "totalcoin", "totalpass", "touchance", "toutiao", "towngas", "towns", "toyou", "tpower", "tradingview", "treasury", "trendyol", "tribbu", "trip", "triumph", "truecaller", "truefan", "truemeds", "truthsocial", "tuhu", "tujia", "tuul", "tv360", "twelfthman", "twilio", "twitch", "twitter", "uaev", "uber", "ubisoft", "uklon", "ukrnet", "ultragaz", "umob", "unacademy", "unibet", "unitedairlines", "universalbeijingresort", "unni", "upland", "uploaded", "upward", "upwork", "userlyticssecurity", "uu163", "valora", "vantage", "vedantu", "vegascasino", "venmo", "verifykit", "vernyj", "verse", "vertex", "vertt", "vestiairecollective", "vfsglobal", "viber", "vidio", "vinita", "vinota", "vinted", "virginred", "vmeetyou", "voggt", "voi", "voopee", "voovmeeting", "vscric", "vtmarkets", "wahanahonda", "wallapop", "walmart", "wanmeigames", "warpcast", "watcho", "watermelonvideo", "watsons", "watsonswaterdropsoffun", "waug", "weareher", "web3auth", "webde", "webmotors", "wechat", "weex", "wefun", "weibo", "weidian", "weku", "welocalize", "weplay", "wepoker", "wert", "weststein", "wetv", "weverse", "whatnot", "whatsapp", "wherestart", "wikifx", "wild", "willhaben", "win33ww", "winamax", "winee3", "wingmall", "wingmoney", "winmore", "winston", "winzo", "wise", "wish", "wizely", "wmaraci", "wolt", "wondermart", "wooplus", "worldremit", "wownow", "wykoppl", "xcty", "xhsapp", "xianyu", "xiaomi", "ximalaya", "xingchengonline", "xmcom", "xunyou", "yaay", "yahoo", "yalla", "yango", "ybirds", "yemeksepeti", "yikyak", "yindii", "yolk", "yongshiwangluo", "yophone", "yoshinoya", "yougotagift", "yougovshopper", "youpin898", "youstar", "yoyowallet", "yuanbao", "yubo", "yuewen", "yylive", "zabkajush", "zalo", "zambrero", "zara", "zcity", "zeabur", "zebpay", "zedelivery", "zepto", "zero2", "zhihu", "zhipuai", "ziglu", "zoho", "zomato", "zoominfo", "zuiyou", "zupee", "zuscoffee"
+];
+
+const cliProjectsData = completeCliList.map(item => ({
+    name: item,
+    website: `https://www.${item}.com`,
+    app: `https://play.google.com/store/apps/details?id=com.${item}`
+}));
+
+function executeCliSearch() {
+    const query = document.getElementById('cliSearchQuery').value.trim().toLowerCase();
+    const container = document.getElementById('cliResultsContainer');
+    container.innerHTML = '';
+
+    const filtered = query === '' 
+        ? cliProjectsData.slice(0, 60) 
+        : cliProjectsData.filter(i => i.name.toLowerCase().startsWith(query) || i.name.toLowerCase().includes(query));
+
+    if (filtered.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:24px; font-size:12px; color:var(--text-muted);"><i class="fa-solid fa-triangle-exclamation" style="font-size:24px; margin-bottom:6px; display:block; color:var(--text-light);"></i> No matching projects found.</div>`;
+        return;
+    }
+
+    filtered.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'project-item-card';
+        card.innerHTML = `
+            <div class="project-header-row">
+                <div class="project-name">
+                    <i class="fa-solid fa-cube" style="color:var(--accent-cyan);"></i>
+                    <span>${p.name}</span>
+                </div>
+                <div class="project-badges">
+                    <span class="mini-badge"><i class="fa-solid fa-check"></i> Available</span>
+                </div>
+            </div>
+            <div class="project-button-row">
+                <button class="btn-mini-action btn-mini-copy" onclick="copyCliKeyword('${p.name}')">
+                    <i class="fa-solid fa-copy"></i> Copy
+                </button>
+                <a href="${p.website}" target="_blank" class="btn-mini-action btn-mini-web">
+                    <i class="fa-solid fa-globe"></i> Web
+                </a>
+                <a href="${p.app}" target="_blank" class="btn-mini-action btn-mini-app">
+                    <i class="fa-brands fa-google-play"></i> App
+                </a>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function copyCliKeyword(text) {
+    navigator.clipboard.writeText(text);
+    playSuccessSound();
+    triggerToast("Copied: " + text);
+}
+
+/* ==================== INITIAL BOOTSTRAP ==================== */
+renderWorkspaceDrawer();
+renderNumbersDisplay();
+executeCliSearch();
+</script>
+
+</body>
+</html>
